@@ -1,0 +1,1815 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Sistema de Gestión de Eventos y Espacios - Iglesia Galilea Mi Casa">
+    <meta name="theme-color" content="#667eea">
+    <title>Calendario Iglesia Galilea</title>
+    
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Galilea">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.95;
+        }
+
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 400px;
+            padding: 40px;
+        }
+
+        .login-box {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .login-box h2 {
+            color: #667eea;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 20px 0;
+            padding: 15px;
+            background: #f0f4ff;
+            border-radius: 8px;
+            border: 2px solid #667eea;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .checkbox-group label {
+            margin: 0 !important;
+            font-size: 16px;
+            font-weight: 600;
+            color: #667eea;
+            cursor: pointer;
+        }
+
+        .recurring-options {
+            display: none;
+            margin-top: 15px;
+            padding: 20px;
+            background: #f5f5f5;
+            border-radius: 8px;
+            border: 2px solid #4CAF50;
+        }
+
+        .recurring-options.active {
+            display: block;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            margin-top: 10px;
+        }
+
+        .btn-logout {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            width: auto;
+            padding: 10px 20px;
+            margin-left: 20px;
+        }
+
+        .error-message {
+            background: #fee;
+            color: #c33;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+            display: none;
+        }
+
+        .success-message {
+            background: #efe;
+            color: #3c3;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+            display: none;
+        }
+
+        .main-content {
+            display: none;
+            padding: 30px;
+        }
+
+        .toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-info span {
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #e0e0e0;
+            overflow-x: auto;
+        }
+
+        .tab {
+            padding: 12px 24px;
+            background: none;
+            border: none;
+            color: #666;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+
+        .tab.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .calendar-header h2 {
+            color: #333;
+        }
+
+        .calendar-nav {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .calendar-nav button {
+            padding: 8px 16px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .calendar-nav button:hover {
+            background: #5568d3;
+        }
+
+        .calendar-nav button.btn-print {
+            background: #4CAF50;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .calendar-day-header {
+            text-align: center;
+            padding: 10px;
+            font-weight: 600;
+            color: #667eea;
+            background: #f5f5f5;
+            border-radius: 6px;
+        }
+
+        .calendar-day {
+            min-height: 100px;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: white;
+        }
+
+        .calendar-day:hover {
+            border-color: #667eea;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+        }
+
+        .calendar-day.other-month {
+            opacity: 0.3;
+        }
+
+        .calendar-day-number {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .calendar-day.today {
+            background: #f0f4ff;
+            border-color: #667eea;
+        }
+
+        .calendar-day.holiday {
+            background: #fff9e6;
+            border-color: #ffd700;
+        }
+
+        .holiday-indicator {
+            font-size: 20px;
+            text-align: center;
+            margin-bottom: 5px;
+        }
+
+        .holiday-name {
+            font-size: 10px;
+            color: #ff6b6b;
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 5px;
+        }
+
+        .event-indicator {
+            font-size: 11px;
+            padding: 3px 6px;
+            background: #667eea;
+            color: white;
+            border-radius: 4px;
+            margin-top: 4px;
+            display: block;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .event-indicator.recurring {
+            background: #4CAF50;
+        }
+
+        .event-filters {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .event-filters select {
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .events-list {
+            display: grid;
+            gap: 15px;
+        }
+
+        .event-card {
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 5px solid #667eea;
+            transition: transform 0.2s;
+        }
+
+        .event-card.recurring {
+            border-left-color: #4CAF50;
+        }
+
+        .event-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .event-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .event-card-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .recurring-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            background: #4CAF50;
+            color: white;
+            border-radius: 4px;
+            font-size: 12px;
+            margin-left: 10px;
+        }
+
+        .event-card-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 14px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .btn-edit {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .btn-delete {
+            background: #f44336;
+            color: white;
+        }
+
+        .btn-modify {
+            background: #2196F3;
+            color: white;
+        }
+
+        .btn-small:hover {
+            transform: scale(1.05);
+        }
+
+        .event-card-details {
+            display: grid;
+            gap: 8px;
+            color: #666;
+        }
+
+        .event-detail {
+            display: flex;
+            gap: 10px;
+        }
+
+        .event-detail-label {
+            font-weight: 600;
+            min-width: 120px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.6);
+            z-index: 1000;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 600px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-header h2 {
+            color: #667eea;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 28px;
+            color: #999;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .modal-close:hover {
+            color: #333;
+        }
+
+        .conflict-warning {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            color: #856404;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .conflict-warning h4 {
+            margin-bottom: 10px;
+        }
+
+        .time-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .info-box {
+            background: #e3f2fd;
+            border: 2px solid #2196F3;
+            color: #1565c0;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .info-box h4 {
+            margin-bottom: 8px;
+        }
+
+        .print-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.6);
+            z-index: 2000;
+            padding: 20px;
+        }
+
+        .print-modal.active {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .print-modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 500px;
+            width: 100%;
+        }
+
+        .month-selector {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .month-btn {
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .month-btn:hover {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+
+        .month-btn.selected {
+            border-color: #667eea;
+            background: #667eea;
+            color: white;
+        }
+
+        .year-selector {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .year-selector button {
+            padding: 8px 16px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .year-selector span {
+            font-size: 24px;
+            font-weight: 700;
+            color: #333;
+            min-width: 80px;
+            text-align: center;
+        }
+
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+
+            .container {
+                box-shadow: none;
+                border-radius: 0;
+                max-width: 100%;
+            }
+
+            .header {
+                background: white !important;
+                color: #333 !important;
+                border-bottom: 3px solid #667eea;
+                padding: 20px !important;
+            }
+
+            .header h1 {
+                color: #667eea !important;
+                font-size: 28px !important;
+            }
+
+            .header p {
+                color: #666 !important;
+                font-size: 14px !important;
+            }
+
+            .toolbar, .tabs, .btn-logout, .btn-print, #loginScreen {
+                display: none !important;
+            }
+
+            #eventsTab, #addTab, #recurringTab {
+                display: none !important;
+            }
+
+            #calendarTab {
+                display: block !important;
+            }
+
+            .calendar-nav {
+                display: none !important;
+            }
+
+            .calendar-day {
+                border: 1px solid #ccc !important;
+                page-break-inside: avoid;
+                min-height: 80px !important;
+            }
+
+            .event-indicator {
+                font-size: 9px !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            .event-indicator.recurring {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            .holiday-indicator {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+                font-size: 18px !important;
+            }
+
+            .holiday-name {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+                color: #ff6b6b !important;
+            }
+
+            .calendar-day.holiday {
+                background: #fff9e6 !important;
+                border-color: #ffd700 !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            .calendar-day.today {
+                background: #f0f4ff !important;
+                border-color: #667eea !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+        }
+
+        @page {
+            size: A4 landscape;
+            margin: 15mm;
+        }
+
+        @media (max-width: 768px) {
+            .calendar-grid {
+                gap: 5px;
+            }
+
+            .calendar-day {
+                min-height: 80px;
+                padding: 5px;
+            }
+
+            .event-indicator {
+                font-size: 10px;
+                padding: 2px 4px;
+            }
+
+            .time-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .toolbar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .tabs {
+                overflow-x: auto;
+            }
+        }
+
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📅 Calendario Iglesia Galilea</h1>
+            <p>Sistema de Gestión de Eventos y Espacios</p>
+        </div>
+
+        <div id="loginScreen" class="login-container">
+            <div class="login-box">
+                <h2>🔐 Iniciar Sesión</h2>
+                <div id="loginError" class="error-message"></div>
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label for="username">Usuario</label>
+                        <input type="text" id="username" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Contraseña</label>
+                        <input type="password" id="password" required>
+                    </div>
+                    <button type="submit" class="btn">Ingresar</button>
+                </form>
+                <div style="margin-top: 20px; padding: 15px; background: #f0f4ff; border-radius: 8px; font-size: 14px;">
+                    <strong>👁️ Solo lectura:</strong> Puedes ver el calendario sin iniciar sesión.<br>
+                    <button type="button" class="btn btn-secondary" onclick="viewOnlyMode()">Ver Calendario (Solo Lectura)</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="mainContent" class="main-content">
+            <div class="toolbar">
+                <div class="user-info">
+                    <span id="currentUser"></span>
+                </div>
+                <div>
+                    <button id="btnViewOnly" class="btn-logout hidden">Modo Solo Lectura</button>
+                    <button id="btnLogout" class="btn-logout hidden">Cerrar Sesión</button>
+                </div>
+            </div>
+
+            <div class="tabs">
+                <button class="tab active" data-tab="calendar">📅 Calendario</button>
+                <button class="tab" data-tab="events">📋 Lista de Eventos</button>
+                <button class="tab" data-tab="add" id="addEventTab">➕ Agregar Evento</button>
+                <button class="tab" data-tab="recurring" id="recurringTab">🔄 Eventos Recurrentes</button>
+            </div>
+
+            <div id="calendarTab" class="tab-content active">
+                <div class="info-box" style="margin-bottom: 20px;">
+                    <h4>🎨 Colores de Eventos</h4>
+                    <p style="font-size: 14px;">Cuando hay varios eventos en un día, cada uno tiene un color diferente según su orden de horario (el más temprano es verde, el siguiente amarillo, etc.). Los feriados tienen 🎈 globos.</p>
+                </div>
+                <div class="calendar-header">
+                    <h2 id="currentMonth"></h2>
+                    <div class="calendar-nav">
+                        <button onclick="previousMonth()">◀ Anterior</button>
+                        <button onclick="today()">Hoy</button>
+                        <button onclick="nextMonth()">Siguiente ▶</button>
+                        <button onclick="openPrintModal()" class="btn-print">🖨️ Imprimir</button>
+                    </div>
+                </div>
+                <div class="calendar-grid" id="calendarGrid"></div>
+            </div>
+
+            <div id="eventsTab" class="tab-content">
+                <div class="event-filters">
+                    <select id="filterLocation" onchange="filterEvents()">
+                        <option value="">Todos los lugares</option>
+                        <option value="AUDITORIO PRINCIPAL">AUDITORIO PRINCIPAL</option>
+                        <option value="AUDITORIO EDUCACION CRISTIANA">AUDITORIO EDUCACION CRISTIANA</option>
+                        <option value="SALÓN DE LA VISIÓN">SALÓN DE LA VISIÓN</option>
+                        <option value="SALA PASTORAL">SALA PASTORAL</option>
+                        <option value="AULA 6-8">AULA 6-8</option>
+                        <option value="AULA 9-11">AULA 9-11</option>
+                        <option value="SEMINARIO BÍBLICO ALIANZA">SEMINARIO BÍBLICO ALIANZA</option>
+                    </select>
+                    <select id="filterDate" onchange="filterEvents()">
+                        <option value="">Todas las fechas</option>
+                        <option value="upcoming">Próximos eventos</option>
+                        <option value="past">Eventos pasados</option>
+                    </select>
+                    <select id="filterRecurring" onchange="filterEvents()">
+                        <option value="">Todos los tipos</option>
+                        <option value="recurring">Solo recurrentes</option>
+                        <option value="single">Solo eventos únicos</option>
+                    </select>
+                </div>
+                <div class="events-list" id="eventsList"></div>
+            </div>
+
+            <div id="addTab" class="tab-content">
+                <div id="eventFormMessage" class="success-message"></div>
+                <div id="conflictWarning" class="conflict-warning hidden"></div>
+                <form id="eventForm">
+                    <div class="form-group">
+                        <label for="eventDate">Fecha *</label>
+                        <input type="date" id="eventDate" required>
+                    </div>
+                    <div class="time-grid">
+                        <div class="form-group">
+                            <label for="eventStartTime">Hora Inicio *</label>
+                            <select id="eventStartTime" required></select>
+                        </div>
+                        <div class="form-group">
+                            <label for="eventEndTime">Hora Fin *</label>
+                            <select id="eventEndTime" required></select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="eventLocation">Lugar *</label>
+                        <select id="eventLocation" required>
+                            <option value="">Seleccione un lugar...</option>
+                            <option value="AUDITORIO PRINCIPAL">AUDITORIO PRINCIPAL</option>
+                            <option value="AUDITORIO EDUCACION CRISTIANA">AUDITORIO EDUCACION CRISTIANA</option>
+                            <option value="SALÓN DE LA VISIÓN">SALÓN DE LA VISIÓN</option>
+                            <option value="SALA PASTORAL">SALA PASTORAL</option>
+                            <option value="AULA 6-8">AULA 6-8</option>
+                            <option value="AULA 9-11">AULA 9-11</option>
+                            <option value="SEMINARIO BÍBLICO ALIANZA">SEMINARIO BÍBLICO ALIANZA</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="eventName">Evento *</label>
+                        <textarea id="eventName" required placeholder="Describa el evento..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="eventResponsible">Responsable *</label>
+                        <input type="text" id="eventResponsible" required placeholder="Nombre del responsable">
+                    </div>
+                    
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="isRecurring" onchange="toggleRecurringOptions()">
+                        <label for="isRecurring">🔄 ¿Este evento se repite?</label>
+                    </div>
+                    
+                    <div id="recurringOptions" class="recurring-options">
+                        <div class="info-box">
+                            <h4>🔄 Evento Recurrente</h4>
+                            <p>Este evento se creará automáticamente en las fechas especificadas.</p>
+                        </div>
+                        <div class="form-group">
+                            <label for="recurringType">Frecuencia *</label>
+                            <select id="recurringType">
+                                <option value="weekly">Semanal (mismo día de la semana)</option>
+                                <option value="biweekly">Quincenal (cada 2 semanas)</option>
+                                <option value="monthly">Mensual (mismo día del mes)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="recurringEndDate">Repetir hasta *</label>
+                            <input type="date" id="recurringEndDate">
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn" id="submitEventBtn">Guardar Evento</button>
+                    <button type="button" class="btn btn-secondary" onclick="cancelEdit()" id="cancelEditBtn" style="display: none;">Cancelar Edición</button>
+                </form>
+            </div>
+
+            <div id="recurringTab" class="tab-content">
+                <h2 style="margin-bottom: 20px;">🔄 Gestión de Eventos Recurrentes</h2>
+                <div class="info-box">
+                    <h4>ℹ️ Información</h4>
+                    <p>Aquí puedes ver y administrar todos los eventos recurrentes. Al eliminar un evento recurrente, se eliminarán <strong>todas sus ocurrencias</strong>.</p>
+                </div>
+                <div class="events-list" id="recurringEventsList"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="eventModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Detalles del Evento</h2>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div id="modalEventDetails"></div>
+        </div>
+    </div>
+
+    <div id="printModal" class="print-modal">
+        <div class="print-modal-content">
+            <div class="modal-header">
+                <h2>🖨️ Imprimir Calendario</h2>
+                <button class="modal-close" onclick="closePrintModal()">&times;</button>
+            </div>
+            
+            <div class="year-selector">
+                <button onclick="changePrintYear(-1)">◀</button>
+                <span id="printYear">2025</span>
+                <button onclick="changePrintYear(1)">▶</button>
+            </div>
+
+            <p style="text-align: center; margin-bottom: 15px; color: #666; font-weight: 600;">Selecciona el mes:</p>
+            
+            <div class="month-selector" id="monthSelector"></div>
+
+            <div style="margin-top: 25px; display: flex; gap: 10px;">
+                <button class="btn" onclick="printSelectedMonth()">🖨️ Imprimir</button>
+                <button class="btn btn-secondary" onclick="closePrintModal()">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const ECUADOR_HOLIDAYS = {
+            '2025-01-01': 'Año Nuevo',
+            '2025-02-10': 'Carnaval',
+            '2025-02-11': 'Carnaval',
+            '2025-04-18': 'Viernes Santo',
+            '2025-05-01': 'Día del Trabajo',
+            '2025-05-24': 'Batalla de Pichincha',
+            '2025-08-10': 'Primer Grito de Independencia',
+            '2025-10-09': 'Independencia de Guayaquil',
+            '2025-11-02': 'Día de los Difuntos',
+            '2025-11-03': 'Independencia de Cuenca',
+            '2025-12-25': 'Navidad'
+        };
+
+        // Colores para diferenciar eventos múltiples en un día
+        const EVENT_COLORS = [
+            '#4CAF50', // Verde
+            '#FFC107', // Amarillo
+            '#FF9800', // Naranja
+            '#f44336', // Rojo
+            '#9C27B0', // Púrpura
+            '#2196F3', // Azul
+            '#00BCD4', // Cyan
+            '#E91E63', // Rosa
+            '#795548', // Café
+            '#607D8B'  // Gris azulado
+        ];
+
+        const USERS = {
+            'admin': 'galilea2025',
+            'pastor': 'pastor123',
+            'secretaria': 'secretaria123'
+        };
+
+        let currentUser = null;
+        let isViewOnly = false;
+        let events = [];
+        let recurringPatterns = [];
+        let currentDate = new Date();
+        let editingEventId = null;
+        let printYear = new Date().getFullYear();
+        let selectedPrintMonth = null;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            loadEvents();
+            loadRecurringPatterns();
+            generateTimeOptions();
+            setupEventListeners();
+            checkStoredSession();
+        });
+
+        function checkStoredSession() {
+            const storedUser = localStorage.getItem('galileaUser');
+            if (storedUser) {
+                currentUser = storedUser;
+                showMainContent();
+            }
+        }
+
+        function setupEventListeners() {
+            document.getElementById('loginForm').addEventListener('submit', handleLogin);
+            document.getElementById('eventForm').addEventListener('submit', handleEventSubmit);
+            document.getElementById('btnLogout').addEventListener('click', logout);
+            document.getElementById('btnViewOnly').addEventListener('click', logout);
+            
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    switchTab(this.dataset.tab);
+                });
+            });
+
+            ['eventDate', 'eventStartTime', 'eventEndTime', 'eventLocation'].forEach(id => {
+                document.getElementById(id).addEventListener('change', checkConflicts);
+            });
+
+            document.getElementById('eventModal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeModal();
+                }
+            });
+
+            document.getElementById('printModal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closePrintModal();
+                }
+            });
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            if (USERS[username] && USERS[username] === password) {
+                currentUser = username;
+                localStorage.setItem('galileaUser', username);
+                showMainContent();
+            } else {
+                showError('Usuario o contraseña incorrectos');
+            }
+        }
+
+        function viewOnlyMode() {
+            isViewOnly = true;
+            currentUser = 'Visitante';
+            showMainContent();
+            document.getElementById('addEventTab').style.display = 'none';
+            document.getElementById('recurringTab').style.display = 'none';
+            document.querySelectorAll('.btn-edit, .btn-delete, .btn-modify').forEach(btn => btn.style.display = 'none');
+            document.getElementById('btnViewOnly').classList.remove('hidden');
+        }
+
+        function showMainContent() {
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('mainContent').style.display = 'block';
+            document.getElementById('currentUser').textContent = `👤 Usuario: ${currentUser}`;
+            if (!isViewOnly) {
+                document.getElementById('btnLogout').classList.remove('hidden');
+            }
+            generateRecurringEvents();
+            renderCalendar();
+            renderEventsList();
+            renderRecurringEventsList();
+        }
+
+        function logout() {
+            currentUser = null;
+            isViewOnly = false;
+            localStorage.removeItem('galileaUser');
+            document.getElementById('loginScreen').style.display = 'flex';
+            document.getElementById('mainContent').style.display = 'none';
+            document.getElementById('loginForm').reset();
+            document.getElementById('addEventTab').style.display = 'block';
+            document.getElementById('recurringTab').style.display = 'block';
+            document.getElementById('btnLogout').classList.add('hidden');
+            document.getElementById('btnViewOnly').classList.add('hidden');
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('loginError');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+            setTimeout(() => {
+                errorDiv.style.display = 'none';
+            }, 3000);
+        }
+
+        function generateTimeOptions() {
+            const startSelect = document.getElementById('eventStartTime');
+            const endSelect = document.getElementById('eventEndTime');
+            
+            for (let hour = 0; hour < 24; hour++) {
+                for (let minute of [0, 30]) {
+                    const timeStr = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
+                    startSelect.add(new Option(timeStr, timeStr));
+                    endSelect.add(new Option(timeStr, timeStr));
+                }
+            }
+        }
+
+        function toggleRecurringOptions() {
+            const isChecked = document.getElementById('isRecurring').checked;
+            const options = document.getElementById('recurringOptions');
+            if (isChecked) {
+                options.classList.add('active');
+                document.getElementById('recurringEndDate').required = true;
+            } else {
+                options.classList.remove('active');
+                document.getElementById('recurringEndDate').required = false;
+            }
+        }
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            
+            document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+            document.getElementById(`${tabName}Tab`).classList.add('active');
+            
+            if (tabName === 'recurring') {
+                renderRecurringEventsList();
+            }
+        }
+
+        function renderCalendar() {
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+            
+            document.getElementById('currentMonth').textContent = 
+                new Date(year, month).toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
+            
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const daysInPrevMonth = new Date(year, month, 0).getDate();
+            
+            const grid = document.getElementById('calendarGrid');
+            grid.innerHTML = '';
+            
+            ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'].forEach(day => {
+                const header = document.createElement('div');
+                header.className = 'calendar-day-header';
+                header.textContent = day;
+                grid.appendChild(header);
+            });
+            
+            for (let i = firstDay - 1; i >= 0; i--) {
+                const day = daysInPrevMonth - i;
+                const cell = createDayCell(day, true, new Date(year, month - 1, day));
+                grid.appendChild(cell);
+            }
+            
+            for (let day = 1; day <= daysInMonth; day++) {
+                const cell = createDayCell(day, false, new Date(year, month, day));
+                grid.appendChild(cell);
+            }
+            
+            const remainingCells = 42 - (firstDay + daysInMonth);
+            for (let day = 1; day <= remainingCells; day++) {
+                const cell = createDayCell(day, true, new Date(year, month + 1, day));
+                grid.appendChild(cell);
+            }
+        }
+
+        function createDayCell(day, otherMonth, date) {
+            const cell = document.createElement('div');
+            cell.className = 'calendar-day';
+            if (otherMonth) cell.classList.add('other-month');
+            
+            const today = new Date();
+            const dateStr = date.toISOString().split('T')[0];
+            
+            if (date.toDateString() === today.toDateString()) {
+                cell.classList.add('today');
+            }
+            
+            // Check for holidays
+            if (ECUADOR_HOLIDAYS[dateStr]) {
+                cell.classList.add('holiday');
+                cell.innerHTML = `
+                    <div class="holiday-indicator">🎈</div>
+                    <div class="holiday-name">${ECUADOR_HOLIDAYS[dateStr]}</div>
+                    <div class="calendar-day-number">${day}</div>
+                `;
+            } else {
+                cell.innerHTML = `<div class="calendar-day-number">${day}</div>`;
+            }
+            
+            // Add events for this day with different colors
+            const dayEvents = events.filter(e => e.date === dateStr);
+            
+            // Sort events by start time
+            dayEvents.sort((a, b) => a.startTime.localeCompare(b.startTime));
+            
+            dayEvents.forEach((event, index) => {
+                const indicator = document.createElement('div');
+                indicator.className = 'event-indicator';
+                
+                // Assign color based on event order in the day
+                const colorIndex = index % EVENT_COLORS.length;
+                indicator.style.backgroundColor = EVENT_COLORS[colorIndex];
+                
+                indicator.textContent = `${event.startTime} - ${event.location}`;
+                indicator.onclick = (e) => {
+                    e.stopPropagation();
+                    showEventModal(event);
+                };
+                cell.appendChild(indicator);
+            });
+            
+            cell.onclick = () => {
+                if (!isViewOnly) {
+                    document.getElementById('eventDate').value = dateStr;
+                    switchTab('add');
+                }
+            };
+            
+            return cell;
+        }
+
+        function previousMonth() {
+            currentDate.setMonth(currentDate.getMonth() - 1);
+            renderCalendar();
+        }
+
+        function nextMonth() {
+            currentDate.setMonth(currentDate.getMonth() + 1);
+            renderCalendar();
+        }
+
+        function today() {
+            currentDate = new Date();
+            renderCalendar();
+        }
+
+        function checkConflicts() {
+            const date = document.getElementById('eventDate').value;
+            const startTime = document.getElementById('eventStartTime').value;
+            const endTime = document.getElementById('eventEndTime').value;
+            const location = document.getElementById('eventLocation').value;
+            
+            if (!date || !startTime || !endTime || !location) return;
+            
+            const conflicts = events.filter(e => {
+                if (editingEventId && e.id === editingEventId) return false;
+                if (e.date !== date || e.location !== location) return false;
+                return (startTime < e.endTime && endTime > e.startTime);
+            });
+            
+            const warningDiv = document.getElementById('conflictWarning');
+            if (conflicts.length > 0) {
+                let html = '<h4>⚠️ Conflicto de Horarios Detectado</h4>';
+                html += '<p>Ya existen los siguientes eventos en este lugar y horario:</p><ul>';
+                conflicts.forEach(c => {
+                    html += `<li><strong>${c.startTime} - ${c.endTime}</strong>: ${c.name}</li>`;
+                });
+                html += '</ul><p>Por favor, elija otro horario o lugar.</p>';
+                warningDiv.innerHTML = html;
+                warningDiv.classList.remove('hidden');
+            } else {
+                warningDiv.classList.add('hidden');
+            }
+        }
+
+        function generateRecurringEvents() {
+            events = events.filter(e => !e.isRecurring);
+            
+            recurringPatterns.forEach(pattern => {
+                const startDate = new Date(pattern.startDate);
+                const endDate = new Date(pattern.endDate);
+                let currentDateLoop = new Date(startDate);
+                
+                while (currentDateLoop <= endDate) {
+                    const dateStr = currentDateLoop.toISOString().split('T')[0];
+                    
+                    const hasConflict = events.some(e => {
+                        if (e.date !== dateStr || e.location !== pattern.location) return false;
+                        return (pattern.startTime < e.endTime && pattern.endTime > e.startTime);
+                    });
+                    
+                    if (!hasConflict) {
+                        events.push({
+                            id: `${pattern.id}-${dateStr}`,
+                            date: dateStr,
+                            startTime: pattern.startTime,
+                            endTime: pattern.endTime,
+                            location: pattern.location,
+                            name: pattern.name,
+                            responsible: pattern.responsible,
+                            isRecurring: true,
+                            patternId: pattern.id,
+                            createdBy: pattern.createdBy
+                        });
+                    }
+                    
+                    if (pattern.frequency === 'weekly') {
+                        currentDateLoop.setDate(currentDateLoop.getDate() + 7);
+                    } else if (pattern.frequency === 'biweekly') {
+                        currentDateLoop.setDate(currentDateLoop.getDate() + 14);
+                    } else if (pattern.frequency === 'monthly') {
+                        currentDateLoop.setMonth(currentDateLoop.getMonth() + 1);
+                    }
+                }
+            });
+            
+            saveEvents();
+        }
+
+        function handleEventSubmit(e) {
+            e.preventDefault();
+            
+            const isRecurring = document.getElementById('isRecurring').checked;
+            
+            if (isRecurring) {
+                const pattern = {
+                    id: Date.now().toString(),
+                    startDate: document.getElementById('eventDate').value,
+                    endDate: document.getElementById('recurringEndDate').value,
+                    startTime: document.getElementById('eventStartTime').value,
+                    endTime: document.getElementById('eventEndTime').value,
+                    location: document.getElementById('eventLocation').value,
+                    name: document.getElementById('eventName').value,
+                    responsible: document.getElementById('eventResponsible').value,
+                    frequency: document.getElementById('recurringType').value,
+                    createdBy: currentUser,
+                    createdAt: new Date().toISOString()
+                };
+                
+                recurringPatterns.push(pattern);
+                saveRecurringPatterns();
+                generateRecurringEvents();
+                
+                showSuccessMessage('✅ Evento recurrente creado exitosamente');
+            } else {
+                const event = {
+                    id: editingEventId || Date.now().toString(),
+                    date: document.getElementById('eventDate').value,
+                    startTime: document.getElementById('eventStartTime').value,
+                    endTime: document.getElementById('eventEndTime').value,
+                    location: document.getElementById('eventLocation').value,
+                    name: document.getElementById('eventName').value,
+                    responsible: document.getElementById('eventResponsible').value,
+                    isRecurring: false,
+                    createdBy: currentUser,
+                    createdAt: new Date().toISOString()
+                };
+                
+                const conflicts = events.filter(ev => {
+                    if (editingEventId && ev.id === editingEventId) return false;
+                    if (ev.date !== event.date || ev.location !== event.location) return false;
+                    return (event.startTime < ev.endTime && event.endTime > ev.startTime);
+                });
+                
+                if (conflicts.length > 0) {
+                    alert('⚠️ No se puede guardar el evento debido a un conflicto de horarios.');
+                    return;
+                }
+                
+                if (editingEventId) {
+                    const index = events.findIndex(e => e.id === editingEventId);
+                    events[index] = event;
+                } else {
+                    events.push(event);
+                }
+                
+                saveEvents();
+                showSuccessMessage(editingEventId ? '✅ Evento actualizado exitosamente' : '✅ Evento creado exitosamente');
+            }
+            
+            document.getElementById('eventForm').reset();
+            document.getElementById('conflictWarning').classList.add('hidden');
+            document.getElementById('recurringOptions').classList.remove('active');
+            editingEventId = null;
+            document.getElementById('cancelEditBtn').style.display = 'none';
+            document.getElementById('submitEventBtn').textContent = 'Guardar Evento';
+            
+            renderCalendar();
+            renderEventsList();
+            renderRecurringEventsList();
+            switchTab('calendar');
+        }
+
+        function showSuccessMessage(message) {
+            const messageDiv = document.getElementById('eventFormMessage');
+            messageDiv.textContent = message;
+            messageDiv.style.display = 'block';
+            setTimeout(() => {
+                messageDiv.style.display = 'none';
+            }, 3000);
+        }
+
+        function convertRecurringToSingle(eventId) {
+            const event = events.find(e => e.id === eventId);
+            if (!event || !event.isRecurring) return;
+            
+            if (!confirm(`¿Convertir este evento del ${formatDate(event.date)} en un evento único?\n\nEsto te permitirá editarlo sin afectar los demás eventos de la serie.`)) return;
+            
+            event.isRecurring = false;
+            event.patternId = null;
+            
+            saveEvents();
+            renderCalendar();
+            renderEventsList();
+            
+            editEvent(event.id);
+        }
+
+        function deleteSingleRecurringEvent(eventId) {
+            const event = events.find(e => e.id === eventId);
+            if (!event) return;
+            
+            if (!confirm(`¿Eliminar SOLO este evento del ${formatDate(event.date)}?\n\nLos demás eventos de la serie no se verán afectados.`)) return;
+            
+            events = events.filter(e => e.id !== eventId);
+            saveEvents();
+            renderCalendar();
+            renderEventsList();
+            
+            alert('✅ Evento eliminado. Los demás eventos de la serie siguen activos.');
+        }
+
+        function renderEventsList() {
+            const container = document.getElementById('eventsList');
+            let filteredEvents = [...events].sort((a, b) => {
+                if (a.date !== b.date) return a.date.localeCompare(b.date);
+                return a.startTime.localeCompare(b.startTime);
+            });
+            
+            const locationFilter = document.getElementById('filterLocation').value;
+            const dateFilter = document.getElementById('filterDate').value;
+            const recurringFilter = document.getElementById('filterRecurring').value;
+            const today = new Date().toISOString().split('T')[0];
+            
+            if (locationFilter) {
+                filteredEvents = filteredEvents.filter(e => e.location === locationFilter);
+            }
+            
+            if (dateFilter === 'upcoming') {
+                filteredEvents = filteredEvents.filter(e => e.date >= today);
+            } else if (dateFilter === 'past') {
+                filteredEvents = filteredEvents.filter(e => e.date < today);
+            }
+            
+            if (recurringFilter === 'recurring') {
+                filteredEvents = filteredEvents.filter(e => e.isRecurring);
+            } else if (recurringFilter === 'single') {
+                filteredEvents = filteredEvents.filter(e => !e.isRecurring);
+            }
+            
+            if (filteredEvents.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: #999; padding: 40px;">No se encontraron eventos</p>';
+                return;
+            }
+            
+            container.innerHTML = filteredEvents.map(event => `
+                <div class="event-card ${event.isRecurring ? 'recurring' : ''}">
+                    <div class="event-card-header">
+                        <div>
+                            <span class="event-card-title">${event.name}</span>
+                            ${event.isRecurring ? '<span class="recurring-badge">🔄 Recurrente</span>' : ''}
+                        </div>
+                        <div class="event-card-actions" ${isViewOnly ? 'style="display:none"' : ''}>
+                            ${!event.isRecurring ? `
+                                <button class="btn-small btn-edit" onclick="editEvent('${event.id}')">Editar</button>
+                                <button class="btn-small btn-delete" onclick="deleteEvent('${event.id}')">Eliminar</button>
+                            ` : `
+                                <button class="btn-small btn-modify" onclick="convertRecurringToSingle('${event.id}')">Modificar</button>
+                                <button class="btn-small btn-delete" onclick="deleteSingleRecurringEvent('${event.id}')">Eliminar</button>
+                            `}
+                        </div>
+                    </div>
+                    <div class="event-card-details">
+                        <div class="event-detail">
+                            <span class="event-detail-label">📅 Fecha:</span>
+                            <span>${formatDate(event.date)}</span>
+                        </div>
+                        <div class="event-detail">
+                            <span class="event-detail-label">🕐 Horario:</span>
+                            <span>${event.startTime} - ${event.endTime}</span>
+                        </div>
+                        <div class="event-detail">
+                            <span class="event-detail-label">📍 Lugar:</span>
+                            <span>${event.location}</span>
+                        </div>
+                        <div class="event-detail">
+                            <span class="event-detail-label">👤 Responsable:</span>
+                            <span>${event.responsible}</span>
+                        </div>
+                        ${event.isRecurring ? `
+                        <div class="event-detail">
+                            <span class="event-detail-label">⚙️:</span>
+                            <span><a href="#" onclick="deleteRecurringPattern('${event.patternId}'); return false;" style="color: #f44336;">Eliminar serie completa</a></span>
+                        </div>
+                        ` : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderRecurringEventsList() {
+            const container = document.getElementById('recurringEventsList');
+            
+            if (recurringPatterns.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: #999; padding: 40px;">No hay eventos recurrentes configurados</p>';
+                return;
+            }
+            
+            const frequencyNames = {
+                'weekly': 'Semanal',
+                'biweekly': 'Quincenal',
+                'monthly': 'Mensual'
+            };
+            
+            container.innerHTML = recurringPatterns.map(pattern => {
+                const occurrences = events.filter(e => e.patternId === pattern.id).length;
+                
+                return `
+                <div class="event-card recurring">
+                    <div class="event-card-header">
+                        <div>
+                            <span class="event-card-title">${pattern.name}</span>
+                            <span class="recurring-badge">🔄 ${frequencyNames[pattern.frequency]}</span>
+                        </div>
+                        <div class="event-card-actions" ${isViewOnly ? 'style="display:none"' : ''}>
+                            <button class="btn-small btn-delete" onclick="deleteRecurringPattern('${pattern.id}')">Eliminar Serie</button>
+                        </div>
+                    </div>
+                    <div class="event-card-details">
+                        <div class="event-detail">
+                            <span class="event-detail-label">📅 Período:</span>
+                            <span>${formatDate(pattern.startDate)} - ${formatDate(pattern.endDate)}</span>
+                        </div>
+                        <div class="event-detail">
+                            <span class="event-detail-label">🕐 Horario:</span>
+                            <span>${pattern.startTime} - ${pattern.endTime}</span>
+                        </div>
+                        <div class="event-detail">
+                            <span class="event-detail-label">📍 Lugar:</span>
+                            <span>${pattern.location}</span>
+                        </div>
+                        <div class="event-detail">
+                            <span class="event-detail-label">👤 Responsable:</span>
+                            <span>${pattern.responsible}</span>
+                        </div>
+                        <div class="event-detail">
+                            <span class="event-detail-label">📊 Total:</span>
+                            <span style="font-weight: bold; color: #4CAF50;">${occurrences} eventos</span>
+                        </div>
+                    </div>
+                </div>
+            `}).join('');
+        }
+
+        function filterEvents() {
+            renderEventsList();
+        }
+
+        function editEvent(id) {
+            const event = events.find(e => e.id === id);
+            if (!event || event.isRecurring) return;
+            
+            editingEventId = id;
+            document.getElementById('eventDate').value = event.date;
+            document.getElementById('eventStartTime').value = event.startTime;
+            document.getElementById('eventEndTime').value = event.endTime;
+            document.getElementById('eventLocation').value = event.location;
+            document.getElementById('eventName').value = event.name;
+            document.getElementById('eventResponsible').value = event.responsible;
+            
+            document.getElementById('submitEventBtn').textContent = 'Actualizar Evento';
+            document.getElementById('cancelEditBtn').style.display = 'block';
+            
+            switchTab('add');
+        }
+
+        function cancelEdit() {
+            editingEventId = null;
+            document.getElementById('eventForm').reset();
+            document.getElementById('submitEventBtn').textContent = 'Guardar Evento';
+            document.getElementById('cancelEditBtn').style.display = 'none';
+            document.getElementById('conflictWarning').classList.add('hidden');
+            document.getElementById('recurringOptions').classList.remove('active');
+        }
+
+        function deleteEvent(id) {
+            if (!confirm('¿Está seguro de eliminar este evento?')) return;
+            
+            events = events.filter(e => e.id !== id);
+            saveEvents();
+            renderCalendar();
+            renderEventsList();
+        }
+
+        function deleteRecurringPattern(id) {
+            const eventsToDelete = events.filter(e => e.patternId === id).length;
+            const pattern = recurringPatterns.find(p => p.id === id);
+            
+            if (!pattern) return;
+            
+            const confirmMessage = `⚠️ Vas a eliminar la serie completa de "${pattern.name}".\n\nSe eliminarán ${eventsToDelete} evento(s).\n\n¿Continuar?`;
+            
+            if (!confirm(confirmMessage)) return;
+            
+            events = events.filter(e => e.patternId !== id);
+            recurringPatterns = recurringPatterns.filter(p => p.id !== id);
+            
+            saveRecurringPatterns();
+            saveEvents();
+            
+            renderCalendar();
+            renderEventsList();
+            renderRecurringEventsList();
+            
+            alert(`✅ Serie eliminada. Se eliminaron ${eventsToDelete} eventos.`);
+        }
+
+        function showEventModal(event) {
+            const modal = document.getElementById('eventModal');
+            const details = document.getElementById('modalEventDetails');
+            
+            details.innerHTML = `
+                <div class="event-card-details">
+                    <h3 style="margin-bottom: 15px; color: #667eea;">
+                        ${event.name}
+                        ${event.isRecurring ? '<span class="recurring-badge">🔄 Recurrente</span>' : ''}
+                    </h3>
+                    <div class="event-detail">
+                        <span class="event-detail-label">📅 Fecha:</span>
+                        <span>${formatDate(event.date)}</span>
+                    </div>
+                    <div class="event-detail">
+                        <span class="event-detail-label">🕐 Horario:</span>
+                        <span>${event.startTime} - ${event.endTime}</span>
+                    </div>
+                    <div class="event-detail">
+                        <span class="event-detail-label">📍 Lugar:</span>
+                        <span>${event.location}</span>
+                    </div>
+                    <div class="event-detail">
+                        <span class="event-detail-label">👤 Responsable:</span>
+                        <span>${event.responsible}</span>
+                    </div>
+                    ${event.createdBy ? `
+                    <div class="event-detail">
+                        <span class="event-detail-label">✍️ Creado por:</span>
+                        <span>${event.createdBy}</span>
+                    </div>
+                    ` : ''}
+                </div>
+                ${!isViewOnly ? (event.isRecurring ? `
+                    <div style="margin-top: 20px; display: grid; gap: 10px;">
+                        <button class="btn" style="background: #2196F3;" onclick="convertRecurringToSingle('${event.id}'); closeModal();">✏️ Modificar Solo Este</button>
+                        <button class="btn" style="background: #FF9800;" onclick="deleteSingleRecurringEvent('${event.id}'); closeModal();">🗑️ Eliminar Solo Este</button>
+                        <button class="btn btn-secondary" onclick="deleteRecurringPattern('${event.patternId}'); closeModal();">⚠️ Eliminar Serie Completa</button>
+                    </div>
+                ` : `
+                    <div style="margin-top: 20px; display: flex; gap: 10px;">
+                        <button class="btn" onclick="editEvent('${event.id}'); closeModal();">Editar</button>
+                        <button class="btn btn-secondary" onclick="deleteEvent('${event.id}'); closeModal();">Eliminar</button>
+                    </div>
+                `) : ''}
+            `;
+            
+            modal.classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('eventModal').classList.remove('active');
+        }
+
+        function formatDate(dateStr) {
+            const date = new Date(dateStr + 'T00:00:00');
+            return date.toLocaleDateString('es-ES', { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            });
+        }
+
+        function saveEvents() {
+            localStorage.setItem('galileaEvents', JSON.stringify(events));
+        }
+
+        function loadEvents() {
+            const stored = localStorage.getItem('galileaEvents');
+            if (stored) {
+                events = JSON.parse(stored);
+            }
+        }
+
+        function saveRecurringPatterns() {
+            localStorage.setItem('galileaRecurringPatterns', JSON.stringify(recurringPatterns));
+        }
+
+        function loadRecurringPatterns() {
+            const stored = localStorage.getItem('galileaRecurringPatterns');
+            if (stored) {
+                recurringPatterns = JSON.parse(stored);
+            }
+        }
+
+        function openPrintModal() {
+            printYear = new Date().getFullYear();
+            selectedPrintMonth = null;
+            document.getElementById('printYear').textContent = printYear;
+            renderMonthSelector();
+            document.getElementById('printModal').classList.add('active');
+        }
+
+        function closePrintModal() {
+            document.getElementById('printModal').classList.remove('active');
+        }
+
+        function renderMonthSelector() {
+            const months = [
+                'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+                'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+            ];
+            
+            const container = document.getElementById('monthSelector');
+            container.innerHTML = months.map((month, index) => `
+                <button class="month-btn ${selectedPrintMonth === index ? 'selected' : ''}" 
+                        onclick="selectPrintMonth(${index})">
+                    ${month}
+                </button>
+            `).join('');
+        }
+
+        function selectPrintMonth(monthIndex) {
+            selectedPrintMonth = monthIndex;
+            renderMonthSelector();
+        }
+
+        function changePrintYear(delta) {
+            printYear += delta;
+            document.getElementById('printYear').textContent = printYear;
+        }
+
+        function printSelectedMonth() {
+            if (selectedPrintMonth === null) {
+                alert('⚠️ Por favor selecciona un mes para imprimir');
+                return;
+            }
+
+            const savedDate = new Date(currentDate);
+            
+            currentDate = new Date(printYear, selectedPrintMonth, 1);
+            renderCalendar();
+            
+            closePrintModal();
+            
+            setTimeout(() => {
+                window.print();
+                
+                setTimeout(() => {
+                    currentDate = savedDate;
+                    renderCalendar();
+                }, 100);
+            }, 100);
+        }
+    </script>
+</body>
+</html>
