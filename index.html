@@ -1635,7 +1635,7 @@
             } else {
                 const event = {
                     id: editingEventId || Date.now().toString(),
-                    date: formatDateToString(document.getElementById('eventDate').value),
+                    date: formatDateToString(document.getElementBystartDate('eventDate').value),
                     startTime: document.getElementById('eventStartTime').value,
                     endTime: document.getElementById('eventEndTime').value,
                     location: document.getElementById('eventLocation').value,
